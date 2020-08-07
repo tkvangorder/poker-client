@@ -1,5 +1,7 @@
 package org.homepoker.client;
 
+import java.io.IOException;
+
 import org.homepoker.domain.user.User;
 import org.springframework.shell.Availability;
 import org.springframework.shell.standard.ShellComponent;
@@ -36,7 +38,8 @@ public class UserCommands {
     }
 
 	@ShellMethod("Create a user.")
-    public void createUser(User user) throws InterruptedException {
+    public void createUser(User user) throws InterruptedException, IOException {
+		
          
         user = connectionManager.getRsocketRequester()
                 .route("create-user")
