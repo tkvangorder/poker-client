@@ -51,11 +51,7 @@ public class UserCommands {
 	
 	@ShellMethodAvailability({"create-default-user", "create-user"})
     private Availability validConnection() {
-    	if (!this.connectionManager.isConnected()) {
-    		return Availability.unavailable("You are not connected to the server.");
-    	} else {
-    		return Availability.available();
-    	}
+    	return this.connectionManager.connectionAvailability();
     }
 	
 }

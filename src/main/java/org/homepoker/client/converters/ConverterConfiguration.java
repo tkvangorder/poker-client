@@ -8,8 +8,8 @@ import org.springframework.context.annotation.Configuration;
 public class ConverterConfiguration {
 
 	@Bean
-	TwoWayJsonConverter converters() {
-		return new TwoWayJsonConverter(User.class);
+	ConditionalJsonConverter converters() {
+		return new ConditionalJsonConverter(User.class);
 	}
 	
 }

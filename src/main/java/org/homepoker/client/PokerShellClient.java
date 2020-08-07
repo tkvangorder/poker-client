@@ -22,17 +22,13 @@ public class PokerShellClient {
     }
 
     @ShellMethod("Disconnect from a poker server.")
-    public void disconnect() throws InterruptedException {    	
+    public void disconnect() throws InterruptedException {
     	connectionManager.disconnect();	
     }
 	
 
     @ShellMethodAvailability({"disconnect"})
     private Availability validConnection() {
-    	if (!this.connectionManager.isConnected()) {
-    		return Availability.unavailable("You are not connected to the server.");
-    	} else {
-    		return Availability.available();
-    	}
+    	return this.connectionManager.connectionAvailability();
     }
 }

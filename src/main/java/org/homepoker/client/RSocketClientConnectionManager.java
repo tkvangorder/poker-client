@@ -2,7 +2,10 @@ package org.homepoker.client;
 
 import java.time.Duration;
 
+import javax.annotation.PreDestroy;
+
 import org.springframework.messaging.rsocket.RSocketRequester;
+import org.springframework.shell.Availability;
 import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
@@ -22,13 +25,20 @@ public class RSocketClientConnectionManager {
 		this.rsocketRequester = rsocketRequesterBuilder.connectTcp(host, port).block(Duration.ofSeconds(10));
         log.info("\nConnected to {}:{}", host, port);		
 	}
-	boolean isConnected() {
-		return this.rsocketRequester != null;
+	Availability connectionAvailability() {
+    	if (this.rsocketRequester == null) {
+    		return Availability.unavailable("You are not connected to the server.");
+    	} else {
+    		return Availability.available();
+    	}		
 	}
 
+	@PreDestroy
 	void disconnect() {
-    	this.rsocketRequester.rsocket().dispose();
-    	this.rsocketRequester = null;    			
+		if (rsocketRequester != null) {
+	    	this.rsocketRequester.rsocket().dispose();
+	    	this.rsocketRequester = null;    			
+		}
 	}
 	
 	public RSocketRequester getRsocketRequester() {
