@@ -20,7 +20,7 @@ public class UserCommands {
 	}
 
 	@ShellMethod("Create a default user.")
-    public void createDefaultUser() throws InterruptedException {
+    public void createDefaultUser() {
         log.info("\nCreating default user...");
         User defaultUser = User.builder()
 				.email("test@test.com")
@@ -38,7 +38,7 @@ public class UserCommands {
     }
 
 	@ShellMethod("Create a user.")
-    public void createUser(User user) throws InterruptedException, IOException {
+    public void createUser(User user) throws IOException {
 		
          
         user = connectionManager.getRsocketRequester()

@@ -17,12 +17,12 @@ public class PokerShellClient {
     @ShellMethod("Connect to a poker server.")
     public void connect(
     		@ShellOption(defaultValue = "localhost") String host,
-    		@ShellOption(defaultValue = "7000") Integer port) throws InterruptedException {
+    		@ShellOption(defaultValue = "7000") Integer port) {
     	connectionManager.connect(host, port);	
     }
 
     @ShellMethod("Disconnect from a poker server.")
-    public void disconnect() throws InterruptedException {
+    public void disconnect() {
     	connectionManager.disconnect();	
     }
 	

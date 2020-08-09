@@ -1,0 +1,32 @@
+:sectlinks:
+:sectanchors:
+:stylesheet: asciidoctor.css
+// If not rendered on github, we use fonts for the captions, otherwise, we assign github emojis. DO NOT PUT A BLANK LINE BEFORE THIS, the ICONS don't render.
+ifndef::env-github[]
+:icons: font
+endif::[]
+ifdef::env-github[]
+:important-caption: :exclamation:
+:warning-caption: :x:
+:caution-caption: :hand:
+:note-caption: :bulb:
+:tip-caption: :mag:
+endif::[]
+
+= Poker Client Overview
+
+This is a sandbox environment for experimenting with Spring reactive programming to implement a poker client/server for use as a "remote" home game. Our poker group has been forced recently to move our home game online due to social distancing. There are surprisingly few choices out there to manage a private cash or tournament game. This project is an attempt to scratch that itch while giving us an excuse to study reactor and RSocket. This command-line client is using Spring shell to provide a RSocket client to the poker-server (https://github.com/tkvangorder/poker-server)
+
+== TODO
+|===
+|Percent |Description
+|20% |Commands for user lookup and sign up.
+|0% |Commands for creating and managing a game.
+|0% |Client-side RSocket security
+|0% |Commands to join find and join a game
+|===
+
+== Done
+
+- Add a Json converter to the shell to allow Complex objects to be marshaled to/from JSON strings.
+- Add a connection manager

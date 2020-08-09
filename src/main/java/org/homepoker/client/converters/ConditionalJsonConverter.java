@@ -43,10 +43,8 @@ public class ConditionalJsonConverter implements ConditionalGenericConverter {
 				return JsonUtils.toJson(source);
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new IllegalArgumentException("Unable to convert JSON type. " + e);
 		}
-			
-		return null;
 	}
 
 	@Override
