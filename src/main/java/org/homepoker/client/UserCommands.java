@@ -19,9 +19,9 @@ public class UserCommands {
 		this.connectionManager = connectionManager;
 	}
 
-	@ShellMethod("Create a default user.")
-    public void createDefaultUser() {
-        log.info("\nCreating default user...");
+	@ShellMethod("Register a default user.")
+    public void registerDefaultUser() {
+        log.info("\nRegistering default user [test@test.com]...");
         User defaultUser = User.builder()
 				.email("test@test.com")
 				.alias("Fred")
@@ -30,26 +30,26 @@ public class UserCommands {
 				.build();
         
         User user = connectionManager.getRsocketRequester()
-                .route("create-user")
+                .route("register-user")
                 .data(defaultUser)
                 .retrieveMono(User.class)
                 .block();
         log.info("\nResponse was: {}", user);
     }
 
-	@ShellMethod("Create a user.")
-    public void createUser(User user) throws IOException {
+	@ShellMethod("Register a user.")
+    public void registerUser(User user) throws IOException {
 		
          
         user = connectionManager.getRsocketRequester()
-                .route("create-user")
+                .route("register-user")
                 .data(user)
                 .retrieveMono(User.class)
                 .block();
         log.info("\nResponse was: {}", user);
     }
 	
-	@ShellMethodAvailability({"create-default-user", "create-user"})
+	@ShellMethodAvailability({"register-default-user", "register-user"})
     private Availability validConnection() {
     	return this.connectionManager.connectionAvailability();
     }
