@@ -1,1 +1,1 @@
-register-user '{"email":"test:test.com", "alias":"Fred", "name":"Fred Jones", "phone":"123 123 1234"}'
+register-user '{"loginId": "test", "password" : "test", email":"test:test.com", "alias":"Fred", "name":"Fred Jones", "phone":"123 123 1234"}'

@@ -12,19 +12,19 @@ import lombok.NoArgsConstructor;
 public class User {
 
 	/**
-	 * Internally assigned unique key used for persistence.
+	 * The user's login ID.
 	 */
-	String id;
-
-	/**
-	 * User's email, also used as the login ID.
-	 */
-	String email;
+	String loginId;
 
 	/**
 	 * User's password, always encrypted.
 	 */
 	String password;
+
+	/**
+	 * User's email
+	 */
+	String email;
 
 	/**
 	 * User's preferred alias when in a game or at a table.
@@ -40,6 +40,5 @@ public class User {
 	 * Phone number can be useful when organizing a remote game.
 	 */
 	String phone;
-
 
 }

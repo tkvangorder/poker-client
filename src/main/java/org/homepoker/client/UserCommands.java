@@ -23,7 +23,9 @@ public class UserCommands {
     public void registerDefaultUser() {
         log.info("\nRegistering default user [test@test.com]...");
         User defaultUser = User.builder()
+        		.loginId("test")
 				.email("test@test.com")
+				.password("fred")
 				.alias("Fred")
 				.name("Fred Jones")
 				.phone("123 123 1234")
@@ -50,15 +52,15 @@ public class UserCommands {
     }
 
 	@ShellMethod("Delete a user.")
-    public void deleteUser(String userId) throws IOException {
+    public void deleteUser(String loginId) throws IOException {
 		
          
         connectionManager.getRsocketRequester()
                 .route("delete-user")
-                .data(userId)
+                .data(loginId)
                 .retrieveMono(User.class)
                 .block();
-        log.info("\nUser [{}] has been deleted.", userId);
+        log.info("\nUser [{}] has been deleted.", loginId);
     }
 	
 	@ShellMethodAvailability({"register-default-user", "register-user", "delete-user"})
