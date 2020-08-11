@@ -48,8 +48,20 @@ public class UserCommands {
                 .block();
         log.info("\nResponse was: {}", user);
     }
+
+	@ShellMethod("Delete a user.")
+    public void deleteUser(String userId) throws IOException {
+		
+         
+        connectionManager.getRsocketRequester()
+                .route("delete-user")
+                .data(userId)
+                .retrieveMono(User.class)
+                .block();
+        log.info("\nUser [{}] has been deleted.", userId);
+    }
 	
-	@ShellMethodAvailability({"register-default-user", "register-user"})
+	@ShellMethodAvailability({"register-default-user", "register-user", "delete-user"})
     private Availability validConnection() {
     	return this.connectionManager.connectionAvailability();
     }
