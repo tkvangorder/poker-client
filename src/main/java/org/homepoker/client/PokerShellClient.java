@@ -15,12 +15,17 @@ public class PokerShellClient {
 	}
 
     @ShellMethod("Connect to a poker server.")
-    public void connect(
+    public void connect( 
     		@ShellOption(defaultValue = "localhost") String host,
     		@ShellOption(defaultValue = "7000") Integer port) {
     	connectionManager.connect(host, port);	
     }
 
+    @ShellMethod("Login with user/password")
+    public void login(String user, String password) {
+//    	connectionManager.login(user, password);	
+    }
+    
     @ShellMethod("Disconnect from a poker server.")
     public void disconnect() {
     	connectionManager.disconnect();	

@@ -30,17 +30,11 @@ public class UserCommands {
 				.name("Fred Jones")
 				.phone("123 123 1234")
 				.build();
-        
-        User user = connectionManager.getRsocketRequester()
-                .route("register-user")
-                .data(defaultUser)
-                .retrieveMono(User.class)
-                .block();
-        log.info("\nResponse was: {}", user);
+        registerUser(defaultUser);
     }
 
 	@ShellMethod("Register a user.")
-    public void registerUser(User user) throws IOException {
+    public void registerUser(User user) {
 		
          
         user = connectionManager.getRsocketRequester()
