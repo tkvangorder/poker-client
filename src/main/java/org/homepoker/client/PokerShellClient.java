@@ -10,6 +10,9 @@ import org.springframework.shell.standard.ShellOption;
 public class PokerShellClient {
 	
 	private final RSocketClientConnectionManager connectionManager;
+	private String host = "localhost";
+	private Integer port = 7000;
+	
 	public PokerShellClient(RSocketClientConnectionManager connectionManager) {
 		this.connectionManager = connectionManager;
 	}
@@ -18,12 +21,28 @@ public class PokerShellClient {
     public void connect( 
     		@ShellOption(defaultValue = "localhost") String host,
     		@ShellOption(defaultValue = "7000") Integer port) {
+    	
+    	this.host = host;
+    	this.port = port;
     	connectionManager.connect(host, port);	
     }
 
-    @ShellMethod("Login with user/password")
+    @ShellMethod("Login to existing poker server with user/password")
+    public void connectWithUser(
+			@ShellOption(help="User ID") String user,
+			@ShellOption(help="User Password") String password,
+			@ShellOption(defaultValue = "localhost") String host,
+			@ShellOption(defaultValue = "7000") Integer port) {
+    	
+    	this.host = host;
+    	this.port = port;
+    	
+    	connectionManager.connect(host, port, user, password);	
+    }
+
+    @ShellMethod("Login to existing poker server with user/password")
     public void login(String user, String password) {
-//    	connectionManager.login(user, password);	
+    	connectionManager.connect(host, port, user, password);	
     }
     
     @ShellMethod("Disconnect from a poker server.")

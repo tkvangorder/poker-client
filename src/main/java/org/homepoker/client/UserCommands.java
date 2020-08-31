@@ -3,6 +3,7 @@ package org.homepoker.client;
 import java.io.IOException;
 
 import org.homepoker.domain.user.User;
+import org.homepoker.domain.user.UserInformationUpdate;
 import org.springframework.shell.Availability;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
@@ -21,13 +22,13 @@ public class UserCommands {
 
 	@ShellMethod("Register a default user.")
     public void registerDefaultUser() {
-        log.info("\nRegistering default user [test@test.com]...");
+        log.info("\nRegistering default user [admin@test.com]...");
         User defaultUser = User.builder()
-        		.loginId("test")
-				.email("test@test.com")
-				.password("fred")
-				.alias("Fred")
-				.name("Fred Jones")
+        		.loginId("admin")
+				.email("admin@test.com")
+				.password("admin")
+				.alias("Mr Admin")
+				.name("Administrator")
 				.phone("123 123 1234")
 				.build();
         registerUser(defaultUser);
@@ -35,7 +36,6 @@ public class UserCommands {
 
 	@ShellMethod("Register a user.")
     public void registerUser(User user) {
-		
          
         user = connectionManager.getRsocketRequester()
                 .route("register-user")
@@ -45,6 +45,9 @@ public class UserCommands {
         log.info("\nResponse was: {}", user);
     }
 
+	public void updateUser(UserInformationUpdate userInformation) {
+		connectionManager.updateUser(userInformation);
+	}
 	@ShellMethod("Delete a user.")
     public void deleteUser(String loginId) throws IOException {
 		
@@ -52,7 +55,7 @@ public class UserCommands {
         connectionManager.getRsocketRequester()
                 .route("delete-user")
                 .data(loginId)
-                .retrieveMono(User.class)
+                .retrieveMono(Void.class)
                 .block();
         log.info("\nUser [{}] has been deleted.", loginId);
     }

@@ -1,11 +1,10 @@
 package org.homepoker.client;
 
-import java.time.Duration;
-
 import javax.annotation.PreDestroy;
 
+import org.homepoker.domain.user.User;
+import org.homepoker.domain.user.UserInformationUpdate;
 import org.springframework.messaging.rsocket.RSocketRequester;
-import org.springframework.messaging.rsocket.RSocketStrategies;
 import org.springframework.security.rsocket.metadata.SimpleAuthenticationEncoder;
 import org.springframework.security.rsocket.metadata.UsernamePasswordMetadata;
 import org.springframework.shell.Availability;
@@ -20,25 +19,55 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class RSocketClientConnectionManager {
 	private static final MimeType SIMPLE_AUTH = MimeTypeUtils.parseMimeType(WellKnownMimeType.MESSAGE_RSOCKET_AUTHENTICATION.getString());
-	 
+	private static final User guestUser = User.builder().loginId("guest").build();
 	private final RSocketRequester.Builder rsocketRequesterBuilder;
 	private RSocketRequester rsocketRequester;
-	private final RSocketStrategies rsocketStrategies;
+	private User currentUser = guestUser;
 	
-	public RSocketClientConnectionManager(RSocketRequester.Builder rsocketRequesterBuilder, RSocketStrategies rsocketStrategies) {
+	public RSocketClientConnectionManager(RSocketRequester.Builder rsocketRequesterBuilder) {
 		this.rsocketRequesterBuilder = rsocketRequesterBuilder;
-		this.rsocketStrategies = rsocketStrategies;
 	}
 
 	public void connect(String host, Integer port) {
+		disconnect();
         log.info("\nConnecting to server...");
-        UsernamePasswordMetadata user = new UsernamePasswordMetadata("user", "pass");
 		this.rsocketRequester = rsocketRequesterBuilder
-				.setupMetadata(user, SIMPLE_AUTH)
 				.rsocketStrategies(builder-> builder.encoder(new SimpleAuthenticationEncoder()))
-				.connectTcp(host, port).block(Duration.ofSeconds(10));
-        log.info("\nConnected to {}:{}", host, port);		
+				.connectTcp(host, port)
+				.log()
+				.block();
+        log.info("\nConnected to {}:{} as anonymous", host, port);
 	}
+
+	public void connect(String host, Integer port, String userId, String password) {
+		disconnect();
+        log.info("\nConnecting to server...");
+        UsernamePasswordMetadata userMeta = new UsernamePasswordMetadata(userId, password);
+		this.rsocketRequester = rsocketRequesterBuilder
+				.rsocketStrategies(builder-> builder.encoder(new SimpleAuthenticationEncoder()))
+				.setupMetadata(userMeta, SIMPLE_AUTH) 
+				.connectTcp(host, port)
+				.block();
+		
+		currentUser = this.rsocketRequester
+		    .route("get-user")
+		    .data(userId)
+		    .retrieveMono(User.class)
+		    .block();
+		
+        log.info("\nConnected to {}:{} as {}", host, port, userId);		
+	}
+	
+	public void updateUser(UserInformationUpdate userInformation) {
+		User user = rsocketRequester
+                .route("update-user")
+                .data(userInformation)
+                .retrieveMono(User.class)
+                .block();
+		
+		currentUser = user;
+	}
+	
 	Availability connectionAvailability() {
     	if (this.rsocketRequester == null) {
     		return Availability.unavailable("You are not connected to the server.");
@@ -49,6 +78,7 @@ public class RSocketClientConnectionManager {
 
 	@PreDestroy
 	void disconnect() {
+		currentUser = guestUser;
 		if (rsocketRequester != null) {
 	    	this.rsocketRequester.rsocket().dispose();
 	    	this.rsocketRequester = null;    			
@@ -58,4 +88,9 @@ public class RSocketClientConnectionManager {
 	public RSocketRequester getRsocketRequester() {
 		return rsocketRequester;
 	}
+
+	public User getCurrentUser() {
+		return currentUser;
+	}
+
 }
