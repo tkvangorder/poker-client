@@ -39,7 +39,7 @@ public class UserCommands {
 			.build();
          
         connectionManager.getRsocketRequester()
-            .route("register-user")
+            .route("user-register")
             .data(user)
             .retrieveMono(User.class)
             .block();
@@ -78,7 +78,7 @@ public class UserCommands {
 	public void userPasswordChange(String loginId, String oldPassword, String newPassword) {
 		
 		connectionManager.getRsocketRequester()
-			.route("update-user-password")
+			.route("user-update-password")
 			.data(new UserPasswordChangeRequest(loginId, oldPassword, newPassword))
 			.retrieveMono(Void.class)
 			.block();
@@ -91,7 +91,7 @@ public class UserCommands {
 		
          
         connectionManager.getRsocketRequester()
-                .route("delete-user")
+                .route("user-delete")
                 .data(loginId)
                 .retrieveMono(Void.class)
                 .block();

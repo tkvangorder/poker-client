@@ -72,7 +72,7 @@ public class RSocketClientConnectionManager {
 				.block();
 		
 		currentUser = this.rsocketRequester
-		    .route("get-user")
+		    .route("user-get")
 		    .data(userId)
 		    .retrieveMono(User.class)
 			.doOnError( error -> rsocketRequester = null)
@@ -87,7 +87,7 @@ public class RSocketClientConnectionManager {
 	 */
 	public void updateUser(UserInformationUpdate userInformation) {
 		User user = rsocketRequester
-                .route("update-user")
+                .route("user-update")
                 .data(userInformation)
                 .retrieveMono(User.class)
                 .block();
