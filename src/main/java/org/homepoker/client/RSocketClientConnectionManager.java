@@ -4,6 +4,7 @@ import javax.annotation.PreDestroy;
 
 import org.homepoker.domain.user.User;
 import org.homepoker.domain.user.UserInformationUpdate;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.security.rsocket.metadata.SimpleAuthenticationEncoder;
 import org.springframework.security.rsocket.metadata.UsernamePasswordMetadata;
@@ -19,19 +20,34 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class RSocketClientConnectionManager {
 	private static final MimeType SIMPLE_AUTH = MimeTypeUtils.parseMimeType(WellKnownMimeType.MESSAGE_RSOCKET_AUTHENTICATION.getString());
-	private static final User guestUser = User.builder().loginId("guest").build();
-	private final RSocketRequester.Builder rsocketRequesterBuilder;
-	private RSocketRequester rsocketRequester;
-	private User currentUser = guestUser;
+
+	/**
+	 * Note the RSocketRequester.Builder is a prototype scope bean and since we
+	 * we may use a builder multiple times within this service, we need to make sure
+	 * we get a "fresh" instance of the builder each time we use it to construct
+	 * the RSocketRequester. So we use an ObjectProvider to get a new instance each time.
+	 */
+	private final ObjectProvider<RSocketRequester.Builder> rsocketRequesterBuilder;
+
 	
-	public RSocketClientConnectionManager(RSocketRequester.Builder rsocketRequesterBuilder) {
+	private RSocketRequester rsocketRequester;
+	private User currentUser = null;
+	
+	public RSocketClientConnectionManager(ObjectProvider<RSocketRequester.Builder> rsocketRequesterBuilder) {
 		this.rsocketRequesterBuilder = rsocketRequesterBuilder;
 	}
 
+	/**
+	 * Connect to the server as an anonymous user. This is allowed so a user may register with the server.
+	 * The only thing an anonymous user is allowed to do is connect and register.
+	 * 
+	 * @param host Poker server host
+	 * @param port Poker server port
+	 */
 	public void connect(String host, Integer port) {
 		disconnect();
         log.info("\nConnecting to server...");
-		this.rsocketRequester = rsocketRequesterBuilder
+		this.rsocketRequester = getRsocketRequesterBuilder()
 				.rsocketStrategies(builder-> builder.encoder(new SimpleAuthenticationEncoder()))
 				.connectTcp(host, port)
 				.log()
@@ -39,13 +55,19 @@ public class RSocketClientConnectionManager {
         log.info("\nConnected to {}:{} as anonymous", host, port);
 	}
 
+	/**
+	 * Connect to the server as a specific user. 
+	 * 
+	 * @param host Poker server host
+	 * @param port Poker server port
+	 */
 	public void connect(String host, Integer port, String userId, String password) {
 		disconnect();
         log.info("\nConnecting to server...");
         UsernamePasswordMetadata userMeta = new UsernamePasswordMetadata(userId, password);
-		this.rsocketRequester = rsocketRequesterBuilder
+		this.rsocketRequester = getRsocketRequesterBuilder()
 				.rsocketStrategies(builder-> builder.encoder(new SimpleAuthenticationEncoder()))
-				.setupMetadata(userMeta, SIMPLE_AUTH) 
+				.setupMetadata(userMeta, SIMPLE_AUTH)
 				.connectTcp(host, port)
 				.block();
 		
@@ -53,11 +75,16 @@ public class RSocketClientConnectionManager {
 		    .route("get-user")
 		    .data(userId)
 		    .retrieveMono(User.class)
-		    .block();
+			.doOnError( error -> rsocketRequester = null)
+			.doOnSuccess(user -> log.info("\nConnected to {}:{} as {}", host, port, userId))
+			.block();
 		
-        log.info("\nConnected to {}:{} as {}", host, port, userId);		
 	}
 	
+	/**
+	 * Update the user's basic contact information. You cannot update a user's password with this method.
+	 * @param userInformation
+	 */
 	public void updateUser(UserInformationUpdate userInformation) {
 		User user = rsocketRequester
                 .route("update-user")
@@ -78,7 +105,7 @@ public class RSocketClientConnectionManager {
 
 	@PreDestroy
 	void disconnect() {
-		currentUser = guestUser;
+		currentUser = null;
 		if (rsocketRequester != null) {
 	    	this.rsocketRequester.rsocket().dispose();
 	    	this.rsocketRequester = null;    			
@@ -92,5 +119,8 @@ public class RSocketClientConnectionManager {
 	public User getCurrentUser() {
 		return currentUser;
 	}
-
+	
+	private RSocketRequester.Builder getRsocketRequesterBuilder() {
+		return rsocketRequesterBuilder.getObject();
+	}
 }

@@ -18,10 +18,23 @@ public class JsonUtils {
 	private JsonUtils() {
 	}
 	
-	public static String toJson(Object o) throws JsonProcessingException {
-		return objectMapper.writeValueAsString(o);
+	public static String toJson(Object o) {
+		try {
+			return objectMapper.writeValueAsString(o);
+		} catch (JsonProcessingException exception) {
+			return "Error : " + exception;
+		}
 	}
 
+	public static String toFormattedJson(Object o) {
+		try {
+			return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(o);
+		} catch (JsonProcessingException exception) {
+			return "Error : " + exception;
+		}
+		
+	}
+	
 	public static <T> T readValue(String jsonString, Class<T> valueType) throws IOException {
 		return objectMapper.readValue(jsonString, valueType);
 	}

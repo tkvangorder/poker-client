@@ -1,1 +1,1 @@
-register-user '{"loginId": "user", "password" : "user", email":"user:test.com", "alias":"Mr Normal", "name":"Normal", "phone":"123 123 1234"}'
+register-user --login-id user --password user --email user:test.com --name "Mr Normal" --phone "123 123 1234"
