@@ -1,5 +1,6 @@
 package org.homepoker.domain.game;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import org.homepoker.domain.user.User;
@@ -14,7 +15,7 @@ import lombok.Data;
  */
 @Data
 @Builder
-public class GameDetails {
+public class TournamentGameDetails {
 
 	/**
 	 * Unique Id of the game.
@@ -25,12 +26,6 @@ public class GameDetails {
 	 * A human readable name for the game.
 	 */
 	private String name;
-
-	/**
-	 * This is a simple enumeration for the format: CASH or TOURNAMENT 
-	 * @return The game format.
-	 */
-	private GameFormat gameFormat;
 
 	/**
 	 * What type of poker game? Texas Hold'em, Draw, etc.
@@ -45,24 +40,17 @@ public class GameDetails {
 	/**
 	 * The number of chips each player will start with.
 	 */
-	private Integer startingChipStack;
+	private Integer buyInChips;
 	
+	/**
+	 * The buy-in amount in dollars
+	 */
+	private BigDecimal buyInAmount;
+
 	/**
 	 * User that created/owns the game.
 	 */
 	private User owner;
-
-	/**
-	 * If the game format is CASH, this is the small blind for the game.
-	 */
-	private Integer smallBlind;
-	
-	/**
-	 * If the game format is CASH, this is the big blind for the game.
-	 */
-	private Integer bigBlind;
-
-	// The rest of the attributes in this class are for defining parameter for a tournament.
 
 	/**
 	 * The time interval where the blinds go "up"
@@ -88,8 +76,13 @@ public class GameDetails {
 	/**
 	 * The amount of chips given for a re-buy.
 	 */
-	private Integer rebuyChipAmount;
+	private Integer rebuyChips;
 	
+	/**
+	 * The rebuy-in amount in dollars
+	 */
+	private BigDecimal rebuyAmount;
+
 	/**
 	 * Does this game allow add-ons?
 	 */
@@ -99,5 +92,10 @@ public class GameDetails {
 	 * The amount of chips given if a player elects to add-on.
 	 */
 	private Integer addOnChipAmount;
+
+	/**
+	 * The add-on amount in dollars
+	 */
+	private BigDecimal addOnAmount;
 
 }
