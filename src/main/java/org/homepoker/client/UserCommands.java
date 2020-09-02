@@ -2,14 +2,17 @@ package org.homepoker.client;
 
 import java.io.IOException;
 
+import org.homepoker.client.util.CountingLogger;
 import org.homepoker.client.util.JsonUtils;
 import org.homepoker.domain.user.User;
+import org.homepoker.domain.user.UserCriteria;
 import org.homepoker.domain.user.UserInformationUpdate;
 import org.homepoker.domain.user.UserPasswordChangeRequest;
 import org.springframework.shell.Availability;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellMethodAvailability;
+import org.springframework.shell.standard.ShellOption;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -43,8 +46,8 @@ public class UserCommands {
             .data(user)
             .retrieveMono(User.class)
             .block();
-        //Print updated user information.
-        user();
+        //Print user information.
+        log.info("Registered User:\n" + JsonUtils.toFormattedJson(user));
     }
 
 	@ShellMethod("This will display the current user information.")
@@ -85,6 +88,21 @@ public class UserCommands {
 		
 		log.info("Password has been changed.");
 	}
+
+	@ShellMethod("Find users registered with the server [loginId, email].")
+	public void findUsers(@ShellOption(defaultValue = ShellOption.NULL) String loginId, @ShellOption(defaultValue = ShellOption.NULL) String email) {
+
+		CountingLogger<User> counter = new CountingLogger<>();
+		
+		connectionManager.getRsocketRequester()
+			.route("user-find")
+			.data(new UserCriteria(loginId, email))
+			.retrieveFlux(User.class)
+			.doOnNext(counter::logElement)
+			.blockLast();
+		
+		log.info("Search Complete. Found [" + counter.getCount() + "] users.");
+	}
 	
 	@ShellMethod("Delete a user [loginId].")
     public void deleteUser(String loginId) throws IOException {
@@ -98,9 +116,8 @@ public class UserCommands {
         log.info("\nUser [{}] has been deleted.", loginId);
     }
 	
-	@ShellMethodAvailability({"register-default-user", "register-user", "delete-user", "update-user", "user-password-change"})
+	@ShellMethodAvailability({"register-default-user", "register-user", "find-users", "delete-user", "update-user", "user-password-change"})
     private Availability validConnection() {
     	return this.connectionManager.connectionAvailability();
     }
-	
 }
