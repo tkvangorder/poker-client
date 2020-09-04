@@ -1,6 +1,7 @@
 package org.homepoker.client.util;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -13,6 +14,7 @@ public class JsonUtils {
 	
 	static {
 		objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+		objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd hh:mm"));
 	}	
 	
 	private JsonUtils() {

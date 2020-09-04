@@ -3,7 +3,7 @@ package org.homepoker.domain.game;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import org.homepoker.domain.user.User;
+import org.homepoker.domain.game.GameType;
 
 import lombok.Builder;
 import lombok.Data;
@@ -30,7 +30,7 @@ public class TournamentGameDetails {
 	/**
 	 * What type of poker game? Texas Hold'em, Draw, etc.
 	 */
-	private GameType type;
+	private GameType gameType;
 
 	/**
 	 * The scheduled/actual start time of the game.
@@ -50,7 +50,7 @@ public class TournamentGameDetails {
 	/**
 	 * User that created/owns the game.
 	 */
-	private User owner;
+	private String ownerLoginId;
 
 	/**
 	 * The time interval where the blinds go "up"
