@@ -1,7 +1,7 @@
 package org.homepoker.domain.game;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import lombok.Builder;
 import lombok.Data;
@@ -33,7 +33,7 @@ public class CashGameDetails {
 	/**
 	 * The scheduled/actual start time of the game.
 	 */
-	private Date startTimestamp;
+	private LocalDateTime startTimestamp;
 	
 	/**
 	 * The number of chips a player receives for the buy-in amount. 
