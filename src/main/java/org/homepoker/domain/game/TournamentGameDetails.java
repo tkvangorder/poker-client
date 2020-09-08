@@ -89,7 +89,7 @@ public class TournamentGameDetails {
 	/**
 	 * The amount of chips given if a player elects to add-on.
 	 */
-	private Integer addOnChipAmount;
+	private Integer addOnChips;
 
 	/**
 	 * The add-on amount in dollars
