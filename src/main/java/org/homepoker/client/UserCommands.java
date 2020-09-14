@@ -42,7 +42,7 @@ public class UserCommands {
 			.build();
          
         connectionManager.getRsocketRequester()
-            .route("user-manager-register-user")
+            .route(RSocketRoutes.ROUTE_USER_MANAGER_REGISTER_USER)
             .data(user)
             .retrieveMono(User.class)
             .block();
@@ -81,7 +81,7 @@ public class UserCommands {
 	public void userPasswordChange(String loginId, String oldPassword, String newPassword) {
 		
 		connectionManager.getRsocketRequester()
-			.route("user-manager-update-password")
+			.route(RSocketRoutes.ROUTE_USER_MANAGER_UPDATE_PASSWORD)
 			.data(new UserPasswordChangeRequest(loginId, oldPassword, newPassword))
 			.retrieveMono(Void.class)
 			.block();
@@ -95,7 +95,7 @@ public class UserCommands {
 		CountingLogger<User> counter = new CountingLogger<>();
 		
 		connectionManager.getRsocketRequester()
-			.route("user-manager-find-users")
+			.route(RSocketRoutes.ROUTE_USER_MANAGER_FIND_USERS)
 			.data(new UserCriteria(loginId, email))
 			.retrieveFlux(User.class)
 			.doOnNext(counter::logElement)
@@ -109,7 +109,7 @@ public class UserCommands {
 		
          
         connectionManager.getRsocketRequester()
-                .route("user-manager-delete-user")
+                .route(RSocketRoutes.ROUTE_USER_MANAGER_DELETE_USER)
                 .data(loginId)
                 .retrieveMono(Void.class)
                 .block();

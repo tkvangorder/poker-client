@@ -7,13 +7,13 @@ import org.springframework.shell.standard.ShellMethodAvailability;
 import org.springframework.shell.standard.ShellOption;
 
 @ShellComponent
-public class PokerShellClient {
+public class PokerConnectCommands {
 	
 	private final RSocketClientConnectionManager connectionManager;
 	private String host = "localhost";
 	private Integer port = 7000;
 	
-	public PokerShellClient(RSocketClientConnectionManager connectionManager) {
+	public PokerConnectCommands(RSocketClientConnectionManager connectionManager) {
 		this.connectionManager = connectionManager;
 	}
 
